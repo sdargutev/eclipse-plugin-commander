@@ -92,8 +92,8 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 			  .setShowAllWhenNoFilter(false)
 			  .setDebounceTimeProvider(inputCommand -> inputCommand.countFilterableCharacters() > 2 ? 50:200)
 			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(20)
-			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(30).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(20).fontColor(155, 103, 4)
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(60).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 		
 		finder.setListContentProvider("working", listContentProviderWorkingSet(listRankAndFilter(nameResolver, pathResolver, projectResolver), settingsStore))
 			  .setMultiResolvedAction(resourceItems -> handleSelectionAction(settingsStore, workbenchPage, workspace, resourceItems))
@@ -102,8 +102,8 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 					if (historyEntry == null) return false;
 					return historyEntry.keepForever;
 				})
-			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(30).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(20).fontColor(155, 103, 4)
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(60).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 
 		
 		InternalCommandContextProvider contextProvider = InternalCommandContextProviderFactory.makeProvider(finder, settingsStore);
@@ -113,7 +113,7 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 		
 		finder.setCurrentProvider(settingsStore.getContentMode());
 		finder.setAutoCloseOnFocusLost(settingsStore.getAutoCloseFocusLost());
-		finder.setBounds(1000, 400);
+		finder.setBounds(1100, 400);
 		finder.open();	
 		return null;
 	}
