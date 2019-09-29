@@ -2,14 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Finder
 Bundle-SymbolicName: dakara.eclipse.finder.plugin;singleton:=true
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 1.1.2
 Bundle-Vendor: Dakara
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.runtime,
  org.eclipse.debug.core,
- org.eclipse.core.resources,
  org.eclipse.jdt.ui,
  org.eclipse.jdt.core,
- dakara.eclipse.commander.plugin
+ com.google.gson
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .,
+ lib/fastutil-8.1.0.jar,
+ lib/reactive-streams-1.0.0.jar,
+ lib/rxjava-2.1.1.jar
