@@ -91,19 +91,19 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 			  .setMultiResolvedAction(resourceItems -> handleSelectionAction(settingsStore, workbenchPage, workspace, resourceItems))
 			  .setShowAllWhenNoFilter(false)
 			  .setDebounceTimeProvider(inputCommand -> inputCommand.countFilterableCharacters() > 2 ? 50:200)
-			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(30)
+			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(20)
 			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(30).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(40).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 		
 		finder.setListContentProvider("working", listContentProviderWorkingSet(listRankAndFilter(nameResolver, pathResolver, projectResolver), settingsStore))
 			  .setMultiResolvedAction(resourceItems -> handleSelectionAction(settingsStore, workbenchPage, workspace, resourceItems))
-			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(30).setMarkerIndicatorProvider(item -> { 
+			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(20).setMarkerIndicatorProvider(item -> { 
 					HistoryEntry historyEntry = settingsStore.getHistoryEntry(item);
 					if (historyEntry == null) return false;
 					return historyEntry.keepForever;
 				})
 			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(30).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(40).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 
 		
 		InternalCommandContextProvider contextProvider = InternalCommandContextProviderFactory.makeProvider(finder, settingsStore);
@@ -113,11 +113,12 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 		
 		finder.setCurrentProvider(settingsStore.getContentMode());
 		finder.setAutoCloseOnFocusLost(settingsStore.getAutoCloseFocusLost());
-		finder.setBounds(800, 400);
+		finder.setBounds(1000, 400);
 		finder.open();	
 		return null;
 	}
 	
+
 	private List<ResourceItem> getAllFileAndTypeResources() {
 		if (files == null) {
 			lastResourceRefresh = System.currentTimeMillis();
@@ -142,20 +143,16 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 		
 		return historyStore;
 	}
-	
 	private String extractPath(String jarPathAndClass) {
-		int startLocation = 0;
-		int endLocation = jarPathAndClass.length();
-		
 		final int locationOfSeparator = jarPathAndClass.indexOf("|");
-		if (locationOfSeparator >= 0) startLocation = locationOfSeparator + 1;
-		
-		final int locationOfClass = jarPathAndClass.lastIndexOf(("/"));
-		if (locationOfClass >=0 ) endLocation = locationOfClass;
-
-		if (endLocation < startLocation) return ""; // There was no path
-		
-		return jarPathAndClass.substring(startLocation, endLocation);
+		if (locationOfSeparator < 0) {
+			return jarPathAndClass;
+		}
+		Path path =new Path(jarPathAndClass.substring(0, locationOfSeparator));
+		if(path.isEmpty()) {
+			return jarPathAndClass;
+		}
+		return jarPathAndClass.substring(jarPathAndClass.indexOf(path.lastSegment()));
 	}
 	
 	public static void handleSelectionAction(PersistedWorkingSet<ResourceItem> historyStore, IWorkbenchPage workbenchPage, IWorkspaceRoot workspace, List<ResourceItem> resourceItems) {
@@ -180,7 +177,7 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 						e.printStackTrace();
 					}
 				else
-					IDE.openEditor(workbenchPage, workspace.getFile(Path.fromPortableString(resourceItem.project + "/" + resourceItem.path + "/" + resourceItem.name)));
+					IDE.openEditor(workbenchPage, workspace.getFile(Path.fromPortableString(resourceItem.project + "/" + resourceItem.path)));
 			}
 		} catch (PartInitException e) {
 			throw new RuntimeException(e);

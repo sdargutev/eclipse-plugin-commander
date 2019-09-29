@@ -195,7 +195,7 @@ public class EclipseWorkbench {
 	}	
 	
 	private static ResourceItem makeResourceItem(IFile file) {
-		return new ResourceItem(file.getName(), makePathOnly(file.getProjectRelativePath()), file.getProject().getName());
+		return new ResourceItem(file.getName(), file.getProjectRelativePath().toString(), file.getProject().getName());
 	}
 	
 	private static ResourceItem makeResourceItem(IClassFile file) {

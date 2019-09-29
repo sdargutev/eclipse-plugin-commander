@@ -24,7 +24,10 @@ public class StringScoreRanking {
 		// bonuses
 		if (targetCursor.indexOfCursor() == 0) {
 			// Our match is at the very beginning
-			rank += 1;
+			rank += 3;
+		}
+		if(!targetCursor.text.asString().contains("[class]")) {
+			rank += 4;
 		}
 		return rank;
 	}	
@@ -46,6 +49,9 @@ public class StringScoreRanking {
 		}
 		if (countUnMarkedWords > 2) {
 			rank = 0;
+		}
+		if(!matchesCursor.text.asString().contains("[class]")) {
+			rank += 2;
 		}
 		return rank;
 	}
@@ -86,7 +92,9 @@ public class StringScoreRanking {
 		// A good acryonym match should have been matched by the acryonym score and ranker.
 		// Assume acronyms here are weak or out of order and discard
 		if (acronymMatching) rank -= 1;
-		
+		if(!targetCursor.text.asString().contains("[class]")) {
+			rank += 2;
+		}
 		return rank;
 	}
 }
