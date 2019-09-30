@@ -60,15 +60,9 @@ public class EclipseWorkbench {
 				String fileExtension = requestResource.getFileExtension();
 				if (requestResource.isHidden()) return false;
 				IProject project = requestResource.getProject();
-				IProjectNature nature = project.getNature("org.eclipse.jdt.core.javanature");
-				if(nature != null) {
-					if(fileExtension.equals("class")) {
+				if(project !=null && project.getNature("org.eclipse.jdt.core.javanature") != null) {
+					if(fileExtension!=null && fileExtension.equals("class")) {
 						return false;
-					}
-					JavaProject javaProject = (JavaProject) nature;
-					IPath javaOutputFolder = javaProject.getOutputLocation().removeFirstSegments(1);
-					if(requestResource.getProjectRelativePath().matchingFirstSegments(javaOutputFolder) == javaOutputFolder.segmentCount()) {
-						return false; 
 					}
 				}
 				IFile file = (IFile) requestResource;
