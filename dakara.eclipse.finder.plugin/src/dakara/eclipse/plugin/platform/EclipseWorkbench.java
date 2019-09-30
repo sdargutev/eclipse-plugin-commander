@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceProxy;
@@ -19,9 +21,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
+import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.Openable;
 import org.eclipse.jdt.internal.core.index.Index;
 import org.eclipse.jdt.internal.core.search.BasicSearchEngine;
@@ -42,7 +46,7 @@ import dakara.eclipse.plugin.log.EclipsePluginLogger;
 
 public class EclipseWorkbench {
 	private static EclipsePluginLogger logger = new EclipsePluginLogger(Constants.BUNDLE_ID);	
-	private static Map<String, IndexInfoCache> indexCacheMap = new HashMap();
+	private static Map<String, IndexInfoCache> indexCacheMap = new HashMap<>();
 	public static List<ResourceItem> collectAllWorkspaceFiles() {
 		IWorkspaceRoot workspace = ResourcesPlugin.getWorkspace().getRoot();
 		List<ResourceItem> files = new ArrayList<>();
@@ -52,8 +56,22 @@ public class EclipseWorkbench {
 				if (proxy.getType() != IResource.FILE) return true;
 				if (proxy.isDerived()) return false;
 				if (proxy.isPhantom()) return false;
-				if (proxy.isHidden()) return false;
-				IFile file = (IFile) proxy.requestResource();
+				IResource requestResource = proxy.requestResource();
+				String fileExtension = requestResource.getFileExtension();
+				if (requestResource.isHidden()) return false;
+				IProject project = requestResource.getProject();
+				IProjectNature nature = project.getNature("org.eclipse.jdt.core.javanature");
+				if(nature != null) {
+					if(fileExtension.equals("class")) {
+						return false;
+					}
+					JavaProject javaProject = (JavaProject) nature;
+					IPath javaOutputFolder = javaProject.getOutputLocation().removeFirstSegments(1);
+					if(requestResource.getProjectRelativePath().matchingFirstSegments(javaOutputFolder) == javaOutputFolder.segmentCount()) {
+						return false; 
+					}
+				}
+				IFile file = (IFile) requestResource;
 				files.add(makeResourceItem(file));
 				return false;
 			}
@@ -195,7 +213,7 @@ public class EclipseWorkbench {
 	}	
 	
 	private static ResourceItem makeResourceItem(IFile file) {
-		return new ResourceItem(file.getName(), file.getProjectRelativePath().toString(), file.getProject().getName());
+		return new ResourceItem(file.getName(), makePathOnly(file.getProjectRelativePath()), file.getProject().getName());
 	}
 	
 	private static ResourceItem makeResourceItem(IClassFile file) {

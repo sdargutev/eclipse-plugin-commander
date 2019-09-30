@@ -91,19 +91,19 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 			  .setMultiResolvedAction(resourceItems -> handleSelectionAction(settingsStore, workbenchPage, workspace, resourceItems))
 			  .setShowAllWhenNoFilter(false)
 			  .setDebounceTimeProvider(inputCommand -> inputCommand.countFilterableCharacters() > 2 ? 50:200)
-			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(20)
+			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(30)
 			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(20).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(60).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 		
 		finder.setListContentProvider("working", listContentProviderWorkingSet(listRankAndFilter(nameResolver, pathResolver, projectResolver), settingsStore))
 			  .setMultiResolvedAction(resourceItems -> handleSelectionAction(settingsStore, workbenchPage, workspace, resourceItems))
-			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(20).setMarkerIndicatorProvider(item -> { 
+			  .addColumn(nameResolver.fieldId, nameResolver.fieldResolver).widthPercent(30).setMarkerIndicatorProvider(item -> { 
 					HistoryEntry historyEntry = settingsStore.getHistoryEntry(item);
 					if (historyEntry == null) return false;
 					return historyEntry.keepForever;
 				})
 			  .addColumn(projectResolver.fieldId, projectResolver.fieldResolver).widthPercent(20).fontColor(155, 103, 4)
-			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(60).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
+			  .addColumn(pathResolver.fieldId, pathResolver.fieldResolver).widthPercent(50).italic().fontColor(100, 100, 100).backgroundColor(250, 250, 250);
 
 		
 		InternalCommandContextProvider contextProvider = InternalCommandContextProviderFactory.makeProvider(finder, settingsStore);
@@ -152,7 +152,8 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 		if(path.isEmpty()) {
 			return jarPathAndClass;
 		}
-		return jarPathAndClass.substring(jarPathAndClass.indexOf(path.lastSegment()));
+		Path path2 = new Path(jarPathAndClass);
+		return jarPathAndClass.substring(jarPathAndClass.indexOf(path.lastSegment()),  jarPathAndClass.indexOf(path2.lastSegment()));
 	}
 	
 	public static void handleSelectionAction(PersistedWorkingSet<ResourceItem> historyStore, IWorkbenchPage workbenchPage, IWorkspaceRoot workspace, List<ResourceItem> resourceItems) {
@@ -177,7 +178,7 @@ public class FinderHandler extends AbstractHandler implements IStartup {
 						e.printStackTrace();
 					}
 				else
-					IDE.openEditor(workbenchPage, workspace.getFile(Path.fromPortableString(resourceItem.project + "/" + resourceItem.path)));
+					IDE.openEditor(workbenchPage, workspace.getFile(Path.fromPortableString(resourceItem.project + "/" + resourceItem.path + "/" + resourceItem.name)));
 			}
 		} catch (PartInitException e) {
 			throw new RuntimeException(e);
